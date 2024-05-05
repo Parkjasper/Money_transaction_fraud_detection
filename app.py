@@ -41,39 +41,31 @@ newbalanceorig = st.sidebar.number_input("New Balance Orig", min_value=0.0, max_
 oldbalancedest = st.sidebar.number_input("Old Balance Dest", min_value=0.0, max_value=110000.0)
 newbalancedest = st.sidebar.number_input("New Balance Dest", min_value=0.0, max_value=110000.0)
 
+# One-hot encode transaction type
+def encode_transaction_type(transaction_type):
+    if transaction_type == 'Cash In':
+        return [1, 0, 0, 0, 0]
+    elif transaction_type == 'Cash Out':
+        return [0, 1, 0, 0, 0]
+    elif transaction_type == 'Debit':
+        return [0, 0, 1, 0, 0]
+    elif transaction_type == 'Payment':
+        return [0, 0, 0, 1, 0]
+    elif transaction_type == 'Transfer':
+        return [0, 0, 0, 0, 1]
+
 # Prediction function
 def predict(step, types, amount, oldbalanceorig, newbalanceorig, oldbalancedest, newbalancedest):
-    features = np.array([[step, types, amount, oldbalanceorig, newbalanceorig, oldbalancedest, newbalancedest]])
+    encoded_transaction_type = encode_transaction_type(types)
+    features = np.array([[step] + encoded_transaction_type + [amount, oldbalanceorig, newbalanceorig, oldbalancedest, newbalancedest]])
     predictions = model.predict(features)
     if predictions == 1:
         return "Fraudulent"
     else:
         return "Not Fraudulent"
 
-# Set background color
-st.markdown(
-    """
-    <style>
-    body {
-        background-color: #FFFFE0; /* You can change this color code */
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
 # Detection result
 if st.button("Detection Result"):
-    values = {
-        "step": step,
-        "Type": types,
-        "amount": amount,
-        "oldbalanceorig": oldbalanceorig,
-        "newbalanceorig": newbalanceorig,
-        "oldbalancedest": oldbalancedest,
-        "newbalancedest": newbalancedest,
-    }
-
     st.write(f"""### These are the transaction details:
     Sender ID: {sender_name}
     Receiver ID: {receiver_name}
@@ -86,6 +78,6 @@ if st.button("Detection Result"):
     7. Recipient Balance After Transaction: ${newbalancedest}
     """)
 
-    # Detection result
     result = predict(step, types, amount, oldbalanceorig, newbalanceorig, oldbalancedest, newbalancedest)
     st.write(f"""### The '{types}' transaction is {result}.""")
+
