@@ -92,5 +92,5 @@ if st.button("Detection Result"):
 
     # Detection result
 if st.button("Detection Result"):
-    result = predict(step, types, amount, oldbalanceorig, newbalanceorig, oldbalancedest, newbalancedest, isflaggedfraud)
+    result = predict(step, types, amount, oldbalanceorig, newbalanceorig, oldbalancedest, newbalancedest)
     st.write(f"""### The '{types}' transaction is {result}.""")
