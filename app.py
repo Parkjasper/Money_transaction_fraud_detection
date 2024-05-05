@@ -12,8 +12,7 @@ st.markdown(
     """
     <style>
     body {
-        background-color: #f0f2f6;
-        background-image: url('image.png');
+        background-color: #FFFFE0;
         background-size: cover;
     }
     </style>
@@ -57,11 +56,10 @@ oldbalanceorig = st.sidebar.number_input("Old Balance Orig", min_value=0.0, max_
 newbalanceorig = st.sidebar.number_input("New Balance Orig", min_value=0.0, max_value=110000.0)
 oldbalancedest = st.sidebar.number_input("Old Balance Dest", min_value=0.0, max_value=110000.0)
 newbalancedest = st.sidebar.number_input("New Balance Dest", min_value=0.0, max_value=110000.0)
-isflaggedfraud = 1 if amount >= 200000 else 0
 
 # Prediction function
-def predict(step, types, amount, oldbalanceorig, newbalanceorig, oldbalancedest, newbalancedest, isflaggedfraud):
-    features = np.array([[step, types, amount, oldbalanceorig, newbalanceorig, oldbalancedest, newbalancedest, isflaggedfraud]])
+def predict(step, types, amount, oldbalanceorig, newbalanceorig, oldbalancedest, newbalancedest):
+    features = np.array([[step, types, amount, oldbalanceorig, newbalanceorig, oldbalancedest, newbalancedest]])
     predictions = model.predict(features)
     if predictions == 1:
         return "Fraudulent"
@@ -78,7 +76,6 @@ if st.button("Detection Result"):
         "newbalanceorig": newbalanceorig,
         "oldbalancedest": oldbalancedest,
         "newbalancedest": newbalancedest,
-        "isflaggedfraud": isflaggedfraud
     }
 
     st.write(f"""### These are the transaction details:
@@ -91,9 +88,9 @@ if st.button("Detection Result"):
     5. Sender Balance After Transaction: ${newbalanceorig}
     6. Recepient Balance Before Transaction: ${oldbalancedest}
     7. Recepient Balance After Transaction: ${newbalancedest}
-    8. System Flag Fraud Status(Transaction amount greater than $200000): {isflaggedfraud}
     """)
 
-    res = re.post("https://credit-fraud-ml-api.herokuapp.com/predict", data=values)
-    result = res.text
-    st.write(f"""### The '{types}' transaction that took place between {sender_name} and {receiver_name} is {result}.""")
+    # Detection result
+if st.button("Detection Result"):
+    result = predict(step, types, amount, oldbalanceorig, newbalanceorig, oldbalancedest, newbalancedest, isflaggedfraud)
+    st.write(f"""### The '{types}' transaction is {result}.""")
