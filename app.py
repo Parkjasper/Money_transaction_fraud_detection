@@ -2,11 +2,25 @@ import streamlit as st
 import joblib
 import numpy as np
 from pydantic import BaseModel
-import json
 import requests as re
 
 # Load the machine learning model
 model = joblib.load('frauddetection.pkl')
+
+# Set background color and image
+st.markdown(
+    """
+    <style>
+    body {
+        background-color: #f0f2f6;
+        background-image: url('image.png');
+        background-size: cover;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 
 # Define the Streamlit app
 st.title("Credit Card Fraud Detection Web App")
@@ -80,6 +94,6 @@ if st.button("Detection Result"):
     8. System Flag Fraud Status(Transaction amount greater than $200000): {isflaggedfraud}
     """)
 
-    res = re.post("https://credit-fraud-ml-api.herokuapp.com/predict", json=values)
+    res = re.post("https://credit-fraud-ml-api.herokuapp.com/predict", data=values)
     result = res.json()[0]
     st.write(f"""### The '{types}' transaction that took place between {sender_name} and {receiver_name} is {result}.""")
