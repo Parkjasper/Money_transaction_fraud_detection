@@ -14,7 +14,13 @@ st.write("""
 ## About
 Credit card fraud is a form of identity theft that involves an unauthorized taking of another's credit card information for the purpose of charging purchases to the account or removing funds from it.
 
-**This Streamlit App aims to detect fraudulent credit card transactions based on transaction details such as amount, sender/receiver information, and transaction type.** 
+**This Streamlit App aims to detect fraudulent credit card transactions based on transaction details such as amount, sender/receiver information, and transaction type.**
+
+**CONTRIBUTERS**
+JERIN JASHPER
+SELVALAKSHMI
+SANTHIYA
+AGANIYA
 
 """)
 
@@ -32,11 +38,12 @@ receiver_id = st.sidebar.text_input("Input Receiver ID")
 
 # Prediction function
 def predict(step, amount, oldbalanceOrg, newbalanceOrig, oldbalanceDest, newbalanceDest, transaction_type, sender_id, receiver_id):
-    # Here you would encode the transaction_type, sender_id, and receiver_id, if needed
-    # Make sure to preprocess the input features in the same way as during model training
-    # Then, create a feature array with the same format as used during training
-    # For simplicity, let's assume all input features are numerical and don't need encoding
-    features = np.array([[step, amount, oldbalanceOrg, newbalanceOrig, oldbalanceDest, newbalanceDest, transaction_type, sender_id, receiver_id]])
+    # Encoding transaction type (assuming it's already encoded)
+    transaction_type_encoded = transaction_type
+    # Assuming sender_id and receiver_id are not used in the model directly
+    
+    # Make prediction
+    features = np.array([[step, amount, oldbalanceOrg, newbalanceOrig, oldbalanceDest, newbalanceDest, transaction_type_encoded]])
     prediction = model.predict(features)
     return "Fraudulent" if prediction == 1 else "Not Fraudulent"
 
