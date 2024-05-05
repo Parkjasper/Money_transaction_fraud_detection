@@ -95,5 +95,5 @@ if st.button("Detection Result"):
     """)
 
     res = re.post("https://credit-fraud-ml-api.herokuapp.com/predict", data=values)
-    result = res.json()[0]
+    result = res.text
     st.write(f"""### The '{types}' transaction that took place between {sender_name} and {receiver_name} is {result}.""")
