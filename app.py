@@ -1,8 +1,9 @@
 import streamlit as st
-import joblib
+import pandas as pd
 import numpy as np
+import joblib
 
-# Load the machine learning model
+# Load the trained model
 model = joblib.load('frauddetection.pkl')
 
 # Define the Streamlit app
@@ -13,71 +14,33 @@ st.write("""
 ## About
 Credit card fraud is a form of identity theft that involves an unauthorized taking of another's credit card information for the purpose of charging purchases to the account or removing funds from it.
 
-**This Streamlit App utilizes a Machine Learning model served as an API in order to detect fraudulent credit card transactions based on the following criteria: hours, type of transaction, amount, balance before and after transaction etc.** 
+**This Streamlit App aims to detect fraudulent credit card transactions based on transaction details such as amount, sender/receiver information, and transaction type.** 
 
-The API was built with FastAPI and can be found [here.](https://credit-fraud-ml-api.herokuapp.com/)
-
-The notebook, model and documentation(Dockerfiles, FastAPI script, Streamlit App script) are available on [GitHub.](https://github.com/Nneji123/Credit-Card-Fraud-Detection)        
-
-**Made by Group 3 Zummit Africa AI/ML Team**
-
-**Contributors:** 
-- **Hilary Ifezue(Group Lead)**
-- **Nneji Ifeanyi**
-- **Somtochukwu Ogechi**
-- **ThankGod Omieje**
-- **Kachukwu Okoh**
 """)
 
 # Input features of the transaction
 st.sidebar.header('Input Features of The Transaction')
-sender_name = st.sidebar.text_input("Input Sender ID")
-receiver_name = st.sidebar.text_input("Input Receiver ID")
 step = st.sidebar.slider("Number of Hours it took the Transaction to complete", 0, 100)
-types = st.sidebar.selectbox("Type of Transfer Made", ("Cash In", "Cash Out", "Debit", "Payment", "Transfer"))
 amount = st.sidebar.number_input("Amount in $", min_value=0.0, max_value=110000.0)
-oldbalanceorig = st.sidebar.number_input("Old Balance Orig", min_value=0.0, max_value=110000.0)
-newbalanceorig = st.sidebar.number_input("New Balance Orig", min_value=0.0, max_value=110000.0)
-oldbalancedest = st.sidebar.number_input("Old Balance Dest", min_value=0.0, max_value=110000.0)
-newbalancedest = st.sidebar.number_input("New Balance Dest", min_value=0.0, max_value=110000.0)
-
-# One-hot encode transaction type
-def encode_transaction_type(transaction_type):
-    if transaction_type == 'Cash In':
-        return [1, 0, 0, 0, 0]
-    elif transaction_type == 'Cash Out':
-        return [0, 1, 0, 0, 0]
-    elif transaction_type == 'Debit':
-        return [0, 0, 1, 0, 0]
-    elif transaction_type == 'Payment':
-        return [0, 0, 0, 1, 0]
-    elif transaction_type == 'Transfer':
-        return [0, 0, 0, 0, 1]
+oldbalanceOrg = st.sidebar.number_input("Old Balance Orig", min_value=0.0, max_value=110000.0)
+newbalanceOrig = st.sidebar.number_input("New Balance Orig", min_value=0.0, max_value=110000.0)
+oldbalanceDest = st.sidebar.number_input("Old Balance Dest", min_value=0.0, max_value=110000.0)
+newbalanceDest = st.sidebar.number_input("New Balance Dest", min_value=0.0, max_value=110000.0)
+transaction_type = st.sidebar.selectbox("Type of Transfer Made", ("CASH_IN", "CASH_OUT", "DEBIT", "PAYMENT", "TRANSFER"))
+sender_id = st.sidebar.text_input("Input Sender ID")
+receiver_id = st.sidebar.text_input("Input Receiver ID")
 
 # Prediction function
-def predict(step, types, amount, oldbalanceorig, newbalanceorig, oldbalancedest, newbalancedest):
-    encoded_transaction_type = encode_transaction_type(types)
-    features = np.array([[step] + encoded_transaction_type + [amount, oldbalanceorig, newbalanceorig, oldbalancedest, newbalancedest]])
-    predictions = model.predict(features)
-    if predictions == 1:
-        return "Fraudulent"
-    else:
-        return "Not Fraudulent"
+def predict(step, amount, oldbalanceOrg, newbalanceOrig, oldbalanceDest, newbalanceDest, transaction_type, sender_id, receiver_id):
+    # Here you would encode the transaction_type, sender_id, and receiver_id, if needed
+    # Make sure to preprocess the input features in the same way as during model training
+    # Then, create a feature array with the same format as used during training
+    # For simplicity, let's assume all input features are numerical and don't need encoding
+    features = np.array([[step, amount, oldbalanceOrg, newbalanceOrig, oldbalanceDest, newbalanceDest, transaction_type, sender_id, receiver_id]])
+    prediction = model.predict(features)
+    return "Fraudulent" if prediction == 1 else "Not Fraudulent"
 
 # Detection result
-if st.button("Detection Result"):
-    st.write(f"""### These are the transaction details:
-    Sender ID: {sender_name}
-    Receiver ID: {receiver_name}
-    1. Number of Hours it took to complete: {step}
-    2. Type of Transaction: {types}
-    3. Amount Sent: ${amount}
-    4. Sender Balance Before Transaction: ${oldbalanceorig}
-    5. Sender Balance After Transaction: ${newbalanceorig}
-    6. Recipient Balance Before Transaction: ${oldbalancedest}
-    7. Recipient Balance After Transaction: ${newbalancedest}
-    """)
-
-    result = predict(step, types, amount, oldbalanceorig, newbalanceorig, oldbalancedest, newbalancedest)
-    st.write(f"""### The '{types}' transaction is {result}.""")
-
+if st.button("Detect Fraud"):
+    result = predict(step, amount, oldbalanceOrg, newbalanceOrig, oldbalanceDest, newbalanceDest, transaction_type, sender_id, receiver_id)
+    st.write(f"The transaction is predicted as: {result}")
