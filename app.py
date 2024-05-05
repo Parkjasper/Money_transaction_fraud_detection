@@ -16,11 +16,7 @@ Credit card fraud is a form of identity theft that involves an unauthorized taki
 
 **This Streamlit App aims to detect fraudulent credit card transactions based on transaction details such as amount, sender/receiver information, and transaction type.**
 
-**CONTRIBUTERS**
-JERIN JASHPER
-SELVALAKSHMI
-SANTHIYA
-AGANIYA
+**CONTRIBUTERS:** JERIN JASHPER, SELVALAKSHMI, SANTHIYA, AGANIYA
 
 """)
 
