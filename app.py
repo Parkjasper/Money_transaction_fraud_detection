@@ -1,25 +1,9 @@
 import streamlit as st
 import joblib
 import numpy as np
-from pydantic import BaseModel
-import requests as re
 
 # Load the machine learning model
 model = joblib.load('frauddetection.pkl')
-
-# Set background color and image
-st.markdown(
-    """
-    <style>
-    body {
-        background-color: #FFFFE0;
-        background-size: cover;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
 
 # Define the Streamlit app
 st.title("Credit Card Fraud Detection Web App")
@@ -66,6 +50,18 @@ def predict(step, types, amount, oldbalanceorig, newbalanceorig, oldbalancedest,
     else:
         return "Not Fraudulent"
 
+# Set background color
+st.markdown(
+    """
+    <style>
+    body {
+        background-color: #FFFFE0; /* You can change this color code */
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 # Detection result
 if st.button("Detection Result"):
     values = {
@@ -86,11 +82,10 @@ if st.button("Detection Result"):
     3. Amount Sent: ${amount}
     4. Sender Balance Before Transaction: ${oldbalanceorig}
     5. Sender Balance After Transaction: ${newbalanceorig}
-    6. Recepient Balance Before Transaction: ${oldbalancedest}
-    7. Recepient Balance After Transaction: ${newbalancedest}
+    6. Recipient Balance Before Transaction: ${oldbalancedest}
+    7. Recipient Balance After Transaction: ${newbalancedest}
     """)
 
     # Detection result
-if st.button("Detection Result"):
     result = predict(step, types, amount, oldbalanceorig, newbalanceorig, oldbalancedest, newbalancedest)
     st.write(f"""### The '{types}' transaction is {result}.""")
